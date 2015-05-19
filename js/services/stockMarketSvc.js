@@ -41,16 +41,14 @@
 
 		obj.redirectToPSE = function (symbol) {
 
-			// $http.defaults.headers.post["Content-Type"] = "application/x-www-form-urlencoded;charset=UTF-8";
-
 			$http({
 				method: 'GET',
 				url: 'ajax/getStockInfo.php?symbol='+symbol
 				})
 				.success(function (r) {					
 						
-					$window.open('http://www.pse.com.ph/stockMarket/companyInfo.html?id='+r.records[0].listedCompany_companyId+'&security='+r.records[0].securityId+'&tab=0');
-					
+					$window.open('http://www.pse.com.ph/stockMarket/companyInfo.html?id='+r.records[0].listedCompany_companyId+'&security='+r.records[0].securityId+'&tab=0');					
+
 				});
 
 		}

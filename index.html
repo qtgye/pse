@@ -7,6 +7,7 @@
 
 	<!-- css libraries -->
 	<link rel="stylesheet" href="libs/bootstrap/css/bootstrap.min.css">
+	<link rel="stylesheet" href="libs/font-awesome/css/font-awesome.min.css">
 
 	<!-- custom css -->
 	<link rel="stylesheet" href="css/style.css">	
@@ -28,38 +29,49 @@
 
 	<div class="container-fluid">
 
-		<div id="listContainer" collapse="isCollapsed">
+		<div id="listContainer" collapse="isCollapsed" ng-init="updateStocks()">
 			
-			<div ng-if="stocksList.info">
+			<div>
 
 				<div class="panel panel-default">
 					
-					<div class="panel-heading">
-						<h3>Stocks List</h3>
+					<div class="panel-heading clearfix">
+						<div class="pull-right">
+							<div class="btn btn-default" ng-click="updateStocks()" ng-disabled="stockUpdating">
+								<i class="fa fa-spinner fa-pulse" ng-show="stockUpdating"></i>
+								<span ng-if="stockUpdating">Updating</span>
+								<span ng-if="!stockUpdating">Update</span>
+							</div>
+						</div>
+						<div class="pull-left" ng-if="stocksList.info">
+							<div class="market-info">
+								<div class="market-info-time">
+									<i class="fa fa-clock-o fa-fw text-muted"></i> &nbsp;
+									Stock update as of {{ stocksList.info.securityAlias }}
+								</div>
+								<div class="market-info-index">
+									<i class="fa fa-line-chart fa-fw text-muted"></i> &nbsp;
+									PSEi : {{ stocksList.index.totalVolume }}
+									<span ng-class="getPercClass(stocksList.index.percChangeClose)">({{ stocksList.index.percChangeClose }}% , {{ stocksList.index.lastTradedPrice }})</span>
+								</div>
+							</div>
+							<!-- end market-info -->
+						</div>
+						<!-- end market-info container -->
 					</div>
 
-					<div class="panel-body">
+					<div class="panel-body" ng-if="stocksList.info" ng-disabled="stockUpdating">
 						
-						<div class="pull-right">						
-							<form action="" class="form-inline">
-								
-								<div class="form-inline">
-									
-									<div class="input-group">
-										<div class="input-group-addon">			
-											Filter List : 							
-										</div>
-										<input type="text" class="form-control" ng-model="stockFilter" placeholder="Stock Symbol, Company, etc.">									
-									</div>
-									<!-- end input-group -->								
-
+						<form action="" class="form-inline form-group" id="filterForm">
+							<div class="input-group">
+								<div class="input-group-addon">			
+									Filter List : 							
 								</div>
-								<!-- end form-group -->							
-
-							</form>
-							<!-- end form -->
-						</div>
-						<!-- end form container -->
+								<input type="text" class="form-control" ng-model="stockFilter" placeholder="Stock Symbol, Company, etc.">									
+							</div>
+							<!-- end input-group -->
+						</form>
+						<!-- end filterForm -->
 
 
 						<table class="table table-hover">
