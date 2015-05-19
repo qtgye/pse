@@ -1,0 +1,31 @@
+.stock-link-marketwatch {
+	background-image: url('http://mw1.wsj.net/MW5/content/images/favicon-152.png');
+}
+.stock-link-pse {
+	background-image: url('http://pse.com.ph/images/favicon.ico');
+}
+.stock-link {
+	width: 2em;
+	height: 2em;
+	display: inline-block;
+		-webkit-border-radius: 999999px;
+		-moz-border-radius: 999999px;
+		-ms-border-radius: 999999px;
+		-o-border-radius: 999999px;
+	border-radius: 999999px;
+	background-position: center center;
+		-webkit-transition: all 0.3s ease;
+		-o-transition: all 0.3s ease;
+	transition: all 0.3s ease;
+	opacity: 0.5;
+	background-size: cover;
+}
+
+.stock-link:hover {
+	opacity: 1;
+}
+
+.td-width-1 {
+	white-space: nowrap;
+	min-width: 1px;
+}

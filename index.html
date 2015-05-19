@@ -1,11 +1,111 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" ng-app="pse">
 <head>
 	<meta charset="UTF-8">
 	<meta title="description" content="PSE Stocks prices monitoring system built by qtgye for personal investment use.">
 	<title>PSE Monitoring | qtgye</title>
+
+	<!-- css libraries -->
+	<link rel="stylesheet" href="libs/bootstrap/css/bootstrap.min.css">
+
+	<!-- custom css -->
+	<link rel="stylesheet" href="css/style.css">	
+
+	<!-- js libraries -->
+	<script src="libs/angular.js"></script>
+	<script src="libs/angular-route.js"></script>
+	<script src="libs/bootstrap/js/ui-bootstrap.min.js"></script>
+
+	<!-- custom js -->	
+	<script src="js/app.js"></script>
+	<script src="js/services/stockMarketSvc.js"></script>
+	<script src="js/controllers/MainCtrl.js"></script>
+	<script src="js/filters/filterStock.js"></script>
+
+
 </head>
-<body>
+<body ng-controller="MainCtrl">
+
+	<div class="container-fluid">
+
+		<div id="listContainer" collapse="isCollapsed">
+			
+			<div ng-if="stocksList.info">
+
+				<div class="panel panel-default">
+					
+					<div class="panel-heading">
+						<h3>Stocks List</h3>
+					</div>
+
+					<div class="panel-body">
+						
+						<div class="pull-right">						
+							<form action="" class="form-inline">
+								
+								<div class="form-inline">
+									
+									<div class="input-group">
+										<div class="input-group-addon">			
+											Filter List : 							
+										</div>
+										<input type="text" class="form-control" ng-model="stockFilter" placeholder="Stock Symbol, Company, etc.">									
+									</div>
+									<!-- end input-group -->								
+
+								</div>
+								<!-- end form-group -->							
+
+							</form>
+							<!-- end form -->
+						</div>
+						<!-- end form container -->
+
+
+						<table class="table table-hover">
+							<thead>
+								<tr>
+									<th><a href="" ng-click="reverse = !reverse; sortType='securitySymbol'">Symbol</a></th>
+									<th><a href="" ng-click="reverse = !reverse; sortType='securityAlias'">Alias</a></th>
+									<th><a href="" ng-click="reverse = !reverse; sortType='lastTradedPrice'">Last Price</a></th>
+									<th><a href="" ng-click="reverse = !reverse; sortType='percChangeClose'">Change</a></th>
+									<th><a href="" ng-click="reverse = !reverse; sortType='totalVolume'">Volume</a></th>
+									<th>Quick Links</th>
+								</tr>
+							</thead>
+							<tbody>							
+								<tr ng-repeat="(i,stock) in stocksList.stocks | filterStock:stockFilter | orderBy:sortType:reverse">
+									<td class="td-width-1">{{ stock.securitySymbol }}</td>
+									<td class="">{{ stock.securityAlias }}</td>
+									<td class="td-width-1">{{ stock.lastTradedPrice | number:2 }}</td>
+									<td ng-class="getPercClass(stock.percChangeClose)">{{ stock.percChangeClose | number:2 }} %</td>
+									<td class="td-width-1">{{ stock.totalVolume | number }}</td>
+									<td class="td-width-1">
+										<a ng-click="goToPSE(stock.securitySymbol)" href="" class="stock-link stock-link-pse" title="Philippine Stock Exchange"></a>
+										<a href="http://www.marketwatch.com/investing/stock/{{ stock.securitySymbol }}/charts?countryCode=PH" class="stock-link stock-link-marketwatch" target="_blank" title="MarketWatch"></a>
+									</td>
+								</tr>
+							</tbody>					
+						</table>
+						<!-- end table -->
+					</div>
+					<!-- end panel body -->
+
+				</div>
+				<!-- end panel -->
+				
+			</div>
+			<!-- end ng-if container -->
+
+		</div>
+		<!-- end #listContainer -->
+		
+		
+
+	</div>
+	<!-- end container-fluid -->
 	
+	
+
 </body>
 </html>
