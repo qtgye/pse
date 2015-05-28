@@ -9,6 +9,8 @@
 		$scope.stockFilter = '';
 		// default sortType is securitySymbol
 		$scope.sortType = 'securitySymbol';
+		// default list to view ( stocks | categories )
+		$scope.viewList = 'stocks';
 		// default reverse is false
 		$scope.reverse = false;
 		// collapse toggle, default to false

@@ -15,7 +15,8 @@
 	<!-- js libraries -->
 	<script src="libs/angular.js"></script>
 	<script src="libs/angular-route.js"></script>
-	<script src="libs/bootstrap/js/ui-bootstrap.min.js"></script>
+	<script src="libs/jquery.js"></script> <!-- jQuery included only to support bootstrap, angular bootstrap lacks capabilities -->
+	<script src="libs/bootstrap/js/bootstrap.min.js"></script>
 
 	<!-- custom js -->	
 	<script src="js/app.js"></script>
@@ -31,38 +32,37 @@
 
 		<div id="listContainer" collapse="isCollapsed" ng-init="updateStocks()">
 			
-			<div>
-
-				<div class="panel panel-default">
+			<div class="panel panel-default">
 					
-					<div class="panel-heading clearfix">
-						<div class="pull-right">
-							<div class="btn btn-default" ng-click="updateStocks()" ng-disabled="stockUpdating">
-								<i class="fa fa-spinner fa-pulse" ng-show="stockUpdating"></i>
-								<span ng-if="stockUpdating">Updating</span>
-								<span ng-if="!stockUpdating">Update</span>
-							</div>
+				<div class="panel-heading clearfix">
+					<div class="pull-right">
+						<div ng-class="{'btn':true,'btn-primary':!stockUpdating,'btn-default':stockUpdating}" ng-click="updateStocks()" ng-disabled="stockUpdating">
+							<i class="fa fa-spinner fa-pulse" ng-show="stockUpdating"></i>
+							<span ng-if="stockUpdating">Updating</span>
+							<span ng-if="!stockUpdating">Update</span>
 						</div>
-						<div class="pull-left" ng-if="stocksList.info">
-							<div class="market-info">
-								<div class="market-info-time">
-									<i class="fa fa-clock-o fa-fw text-muted"></i> &nbsp;
-									Stock update as of {{ stocksList.info.securityAlias }}
-								</div>
-								<div class="market-info-index">
-									<i class="fa fa-line-chart fa-fw text-muted"></i> &nbsp;
-									PSEi : {{ stocksList.index.totalVolume }}
-									<span ng-class="getPercClass(stocksList.index.percChangeClose)">({{ stocksList.index.percChangeClose }}% , {{ stocksList.index.lastTradedPrice }})</span>
-								</div>
-							</div>
-							<!-- end market-info -->
-						</div>
-						<!-- end market-info container -->
 					</div>
+					<div class="pull-left" ng-if="stocksList.info">
+						<div class="market-info">
+							<div class="market-info-time">
+								<i class="fa fa-clock-o fa-fw text-muted"></i> &nbsp;
+								Stock update as of {{ stocksList.info.securityAlias }}
+							</div>
+							<div class="market-info-index">
+								<i class="fa fa-line-chart fa-fw text-muted"></i> &nbsp;
+								PSEi : {{ stocksList.index.totalVolume }}
+								<span ng-class="getPercClass(stocksList.index.percChangeClose)">({{ stocksList.index.percChangeClose }}% , {{ stocksList.index.lastTradedPrice }})</span>
+							</div>
+						</div>
+						<!-- end market-info -->
+					</div>
+					<!-- end market-info container -->
+				</div>
 
-					<div class="panel-body" ng-if="stocksList.info" ng-disabled="stockUpdating">
-						
-						<form action="" class="form-inline form-group" id="filterForm">
+				<div class="panel-body" ng-if="stocksList.info" ng-disabled="stockUpdating">
+
+					<div id="settingsPanel" class="form-inline">
+						<form action="" class="form-inline form-group" id="filterForm" ng-show="viewList=='stocks'">
 							<div class="input-group">
 								<div class="input-group-addon">			
 									Filter List : 							
@@ -73,51 +73,102 @@
 						</form>
 						<!-- end filterForm -->
 
+						<form action="" class="form-inline form-group" id="selectList">
+							<div class="btn-group">
+								<label for="stocksRadio" ng-class="{'btn':true,'btn-default':(viewList!='stocks'),'btn-primary':(viewList=='stocks')}">Stocks</label>
+								<label for="categoriesRadio" ng-class="{'btn':true,'btn-default':(viewList!='categories'),'btn-primary':(viewList=='categories')}">Categories</label>
+							</div>
+							<div class="hide">
+								<input data-target="#stocksListCarousel" data-slide-to="0" type="radio" name="viewList" ng-model="viewList" value="stocks" id="stocksRadio">
+								<input data-target="#stocksListCarousel" data-slide-to="1" type="radio" name="viewList" ng-model="viewList" value="categories" id="categoriesRadio">
+							</div>
+							<!-- end input-group -->
+						</form>
+						<!-- end selectList -->
+					</div>		
+					<!-- end settingsPanel -->
 
-						<table class="table table-hover">
-							<thead>
-								<tr>
-									<th><a href="" ng-click="reverse = !reverse; sortType='securitySymbol'">Symbol</a></th>
-									<th><a href="" ng-click="reverse = !reverse; sortType='securityAlias'">Alias</a></th>
-									<th><a href="" ng-click="reverse = !reverse; sortType='lastTradedPrice'">Last Price</a></th>
-									<th><a href="" ng-click="reverse = !reverse; sortType='percChangeClose'">Change</a></th>
-									<th><a href="" ng-click="reverse = !reverse; sortType='totalVolume'">Volume</a></th>
-									<th>Quick Links</th>
-								</tr>
-							</thead>
-							<tbody>							
-								<tr ng-repeat="(i,stock) in stocksList.stocks | filterStock:stockFilter | orderBy:sortType:reverse">
-									<td class="td-width-1">{{ stock.securitySymbol }}</td>
-									<td class="">{{ stock.securityAlias }}</td>
-									<td class="td-width-1">{{ stock.lastTradedPrice | number:2 }}</td>
-									<td ng-class="getPercClass(stock.percChangeClose)">{{ stock.percChangeClose | number:2 }} %</td>
-									<td class="td-width-1">{{ stock.totalVolume | number }}</td>
-									<td class="td-width-1">
-										<a ng-click="goToPSE(stock.securitySymbol)" href="" class="stock-link stock-link-pse" title="Philippine Stock Exchange"></a>
-										<a href="http://www.marketwatch.com/investing/stock/{{ stock.securitySymbol }}/charts?countryCode=PH" class="stock-link stock-link-marketwatch" target="_blank" title="MarketWatch"></a>
-									</td>
-								</tr>
-							</tbody>					
-						</table>
-						<!-- end table -->
+
+					<div id="stocksListCarousel" class="carousel slide">
+
+						<div class="carousel-inner">
+
+							<div class="item active">
+								<table class="table table-hover">
+									<thead>
+										<tr>
+											<th><a href="" ng-click="reverse = !reverse; sortType='securitySymbol'">Symbol</a></th>
+											<th><a href="" ng-click="reverse = !reverse; sortType='securityAlias'">Alias</a></th>
+											<th><a href="" ng-click="reverse = !reverse; sortType='lastTradedPrice'">Last Price</a></th>
+											<th><a href="" ng-click="reverse = !reverse; sortType='percChangeClose'">Change</a></th>
+											<th><a href="" ng-click="reverse = !reverse; sortType='totalVolume'">Volume</a></th>
+											<th>Quick Links</th>
+										</tr>
+									</thead>
+									<tbody>	
+										<!-- stocks list -->
+										<tr ng-repeat="(i,stock) in stocksList.stocks | filterStock:stockFilter | orderBy:sortType:reverse">
+											<td class="td-width-1">{{ stock.securitySymbol }}</td>
+											<td class="">{{ stock.securityAlias }}</td>
+											<td class="td-width-1">{{ stock.lastTradedPrice | number:2 }}</td>
+											<td ng-class="getPercClass(stock.percChangeClose)">{{ stock.percChangeClose | number:2 }} %</td>
+											<td class="td-width-1">{{ stock.totalVolume | number }}</td>
+											<td class="td-width-1">
+												<a ng-click="goToPSE(stock.securitySymbol)" href="" class="stock-link stock-link-pse" title="Philippine Stock Exchange"></a>
+												<a href="http://www.marketwatch.com/investing/stock/{{ stock.securitySymbol }}/charts?countryCode=PH" class="stock-link stock-link-marketwatch" target="_blank" title="MarketWatch"></a>
+											</td>
+										</tr>
+									</tbody>					
+								</table>
+								<!-- end stocks table -->	
+							</div>
+							<!-- end item -->
+							
+							<div class="item">
+								<table class="table table-hover item">
+									<thead>
+										<tr>
+											<th><a href="" ng-click="reverse = !reverse; sortType='securitySymbol'">Symbol</a></th>
+											<th><a href="" ng-click="reverse = !reverse; sortType='securityAlias'">Alias</a></th>
+											<th><a href="" ng-click="reverse = !reverse; sortType='lastTradedPrice'">Last Price</a></th>
+											<th><a href="" ng-click="reverse = !reverse; sortType='percChangeClose'">Change</a></th>
+											<th><a href="" ng-click="reverse = !reverse; sortType='totalVolume'">Volume</a></th>
+											<th>Quick Links</th>
+										</tr>
+									</thead>
+									<tbody>										
+										<!-- categories list -->
+										<tr ng-repeat="(i,stock) in stocksList.market_categories | orderBy:sortType:reverse">
+											<td class="td-width-1">{{ stock.securitySymbol }}</td>
+											<td class="">{{ stock.securityAlias }}</td>
+											<td class="td-width-1">{{ stock.lastTradedPrice | number:2 }}</td>
+											<td ng-class="getPercClass(stock.percChangeClose)">{{ stock.percChangeClose | number:2 }} %</td>
+											<td class="td-width-1">{{ stock.totalVolume | number }}</td>
+											<td class="td-width-1"></td>
+										</tr>
+									</tbody>					
+								</table>
+								<!-- end categories table -->
+							</div>
+							<!-- end item -->								
+						
+						</div>
+						<!-- end carousel-inner -->	
+
 					</div>
-					<!-- end panel body -->
+					<!-- end stocksListCarousel -->																	
 
 				</div>
-				<!-- end panel -->
-				
+				<!-- end panel body -->
+
 			</div>
-			<!-- end ng-if container -->
+			<!-- end panel -->
 
 		</div>
-		<!-- end #listContainer -->
-		
-		
+		<!-- end #listContainer -->		
 
 	</div>
-	<!-- end container-fluid -->
-	
-	
+	<!-- end container-fluid -->	
 
 </body>
 </html>
